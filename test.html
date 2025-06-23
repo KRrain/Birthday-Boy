@@ -785,35 +785,31 @@ if (!isValidDiscordId(discord)) {
 document.getElementById("bookingSuccessPopup").style.display = "flex";
 
       // ✅ SEND DISCORD WEBHOOK
-      const webhookURL = "https://discord.com/api/webhooks/1386354144863981638/Y83UUBRIJyURXUuiRvEifdNSYzUcxpUIbeMM0fQLu1L3OCG9IG0wTKmt5kU3Xui_xO38"; // Replace this
-      const mentionRoleId = "715583272062681110";       // Replace with actual role ID
+      fetch("https://hostylok.onrender.com/send-webhook", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    content: "<@&715583272062681110> A new VTC slot has been booked!",
+    embeds: [{
+      title: `✅ VTC Slot Booked: Slot ${bookingData.slotNumber}`,
+      description: `🚛 **VTC Name:** ${bookingData.vtcName}\n🎖️ **Role:** ${bookingData.vtcRole}\n🔗 **Link:** ${bookingData.vtcLink}\n🆔 **Discord ID:** ${bookingData.discordId}`,
+      color: 16711680,
+      image: { url: "https://i.imgur.com/Vt6UaZn.gif" },
+      timestamp: new Date().toISOString()
+    }]
+  })
+})
+.then(res => {
+  if (res.ok) {
+    showAlert("✅ Webhook sent via server!");
+  } else {
+    showAlert("❌ Failed to send webhook.");
+  }
+})
+.catch(err => {
+  showAlert("❌ Server error: " + err.message);
+});
 
-      fetch(webhookURL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: `<@&${mentionRoleId}> A new VTC slot has been booked!`,
-          embeds: [{
-            title: `✅ VTC Slot Booked: Slot ${bookingData.slotNumber}`,
-            description: `🚛 **VTC Name:** ${bookingData.vtcName}\n\n🎖️**Role:** ${bookingData.vtcRole}\n\n🔗 **Link:** ${bookingData.vtcLink}\n\n🆔 **Discord ID:** ${bookingData.discordId}`,
-            color: 16711680,
-            image: {
-              url: "https://i.imgur.com/Vt6UaZn.gif"
-            },
-            timestamp: new Date().toISOString()
-          }]
-        })
-      }).then(() => {
-        console.log("Webhook sent!");
-      }).catch(err => {
-        console.error("Webhook failed:", err);
-      });
-    }).catch(err => {
-      console.error(err);
-      showAlert("Error booking. Try again.");
-    });
-  });
-};
 
 document.getElementById("clearForm").addEventListener("click", () => {
   // Clear input fields
